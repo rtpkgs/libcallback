@@ -19,7 +19,7 @@ libcallback 是基于 rt-thread 使用的同步异步回调队列实现库.
 
 rt_err_t cb(rt_callback_queue_t queue, void *p)
 {
-	rt_thread_mdelay(1000); 
+    rt_thread_mdelay(1000); 
     rt_kprintf("hello libcallback: %s.\n", rt_thread_self()->name); 
     return RT_EOK; 
 }
