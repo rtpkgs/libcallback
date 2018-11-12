@@ -9,6 +9,56 @@ libcallback 是基于 rt-thread 使用的同步异步回调队列实现库.
 4. 执行顺序确定
 5. 支持性能评估
 
+## 效果
+
+![](https://i.imgur.com/FWB7Ywp.gif)
+
+效果代码: 
+
+```
+#include <rtthread.h>
+#include "libcallback.h" 
+#include "msh.h" 
+
+rt_err_t cb(rt_callback_queue_t queue, void *p)
+{
+    static int cnt = 1; 
+    rt_thread_mdelay(1000); 
+    rt_kprintf("cb run cnt = %d.\n", cnt++); 
+    return cnt; 
+}
+
+rt_callback_queue_t queue; 
+
+int callback_msh(void)
+{
+    queue = rt_callback_queue_create("cb_queue1", 1024, 22); 
+    
+    rt_kprintf("11111.\n"); 
+    rt_callback_call(queue, cb, RT_NULL, RT_CALLBACK_MODE_ASYN);
+    
+    rt_kprintf("22222.\n"); 
+    rt_callback_call(queue, cb, RT_NULL, RT_CALLBACK_MODE_ASYN);
+    
+    rt_kprintf("33333.\n"); 
+    rt_callback_call(queue, cb, RT_NULL, RT_CALLBACK_MODE_ASYN);
+    
+    rt_kprintf("44444.\n"); 
+    rt_callback_call(queue, cb, RT_NULL, RT_CALLBACK_MODE_SYNC);
+    
+    rt_kprintf("55555.\n"); 
+    rt_callback_call(queue, cb, RT_NULL, RT_CALLBACK_MODE_FUNC);
+    
+    rt_kprintf("66666.\n"); 
+    rt_callback_queue_delete(queue);  
+    
+    rt_kprintf("77777.\n"); 
+    
+    return RT_EOK; 
+}
+MSH_CMD_EXPORT_ALIAS(callback_msh, test, callback_msh); 
+```
+
 ## 直接回调
 
 1. 调用者与回调执行为同一线程
